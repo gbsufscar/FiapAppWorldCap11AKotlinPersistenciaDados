@@ -19,6 +19,7 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Checkbox
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -30,11 +31,10 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.BlendMode.Companion.Color
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.input.KeyboardCapitalization
 import androidx.compose.ui.text.input.KeyboardType
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import br.com.fiap.meuscontatos.ui.theme.MeusContatosTheme
@@ -90,81 +90,112 @@ fun ContatosScreen() {
         )
         ContatoList()
     }
+}
 
 
-    // Funções da aplicação
-    @Composable
-    fun ContatoForm(
-        nome: String,
-        telefone: String,
-        amigo: Boolean,
-        onNomeChange: (String) -> Unit,
-        onTelefoneChange: (String) -> Unit,
-        onAmigoChange: (Boolean) -> Unit
+// Funções da aplicação
+@Composable
+fun ContatoForm(
+    // Parâmetros da função
+    nome: String,
+    telefone: String,
+    amigo: Boolean,
+
+    // Funções de callback
+    /*
+    Função de callback para quando o nome do contato for alterado:
+    Em Kotlin, uma função de callback é aquela que é passada como argumento para outra função.
+    Durante a execução da função receptora, a função de callback pode ser invocada no momento apropriado.
+
+    Nesse caso, trata-se de um parâmetro do tipo função que recebe uma String como argumento
+    e não retorna nada (representado por Unit). Esse parâmetro será usado para lidar com mudanças no nome do contato.
+     */
+    onNomeChange: (String) -> Unit,
+    onTelefoneChange: (String) -> Unit,
+    onAmigoChange: (Boolean) -> Unit
+) {
+    // Formulário
+    Column(
+        modifier = Modifier.padding(16.dp)
     ) {
-        // Formulário
-        Column(
-            modifier = Modifier.padding(16.dp)
+        Text(
+            text = "Cadastro de contatos",
+            fontSize = 24.sp,
+            fontWeight = FontWeight.Bold,
+            color = Color(
+                0xFFE91E63
+            )
+        )
+        Spacer(modifier = Modifier.height(8.dp))
+        OutlinedTextField(
+            value = nome,
+            modifier = Modifier.fillMaxWidth(),
+            /*
+            onValueChange:
+            É uma função de callback que é chamada quando o valor do campo de texto é alterado.
+            Ela recebe o novo valor como argumento: a função onTelefoneChange é chamada
+            com o novo valor.
+             */
+            onValueChange = {
+                onNomeChange(it)
+            },
+            label = {
+                Text(text = "Nome contato")
+            },
+            keyboardOptions = KeyboardOptions(
+                keyboardType = KeyboardType.Text,
+                capitalization = KeyboardCapitalization.Words
+            )
+        )
+        Spacer(modifier = Modifier.height(8.dp))
+        OutlinedTextField(
+            value = telefone,
+            onValueChange = { onTelefoneChange(it) },
+            modifier = Modifier.fillMaxWidth(),
+            label = {
+                Text(text = "Telefone do contato")
+            },
+            keyboardOptions = KeyboardOptions(
+                keyboardType = KeyboardType.Phone
+            )
+        )
+        Spacer(modifier = Modifier.height(8.dp))
+        Row(
+            verticalAlignment = Alignment.CenterVertically,
+            modifier = Modifier.fillMaxWidth()
+        ) {
+            Checkbox(
+                checked = amigo,
+                onCheckedChange = {
+                    onAmigoChange(it)
+                }
+            )
+            Text(text = "Amigo")
+        }
+        Spacer(modifier = Modifier.height(16.dp))
+        Button(
+            onClick = { /*TODO*/ },
+            modifier = Modifier.fillMaxWidth()
         ) {
             Text(
-                text = "Cadastro de contatos",
-                fontSize = 24.sp,
-                fontWeight = FontWeight.Bold,
-                color = Color(
-                    0xFFE91E63
-                )
+                text = "CADASTRAR",
+                modifier = Modifier.padding(8.dp)
             )
-            Spacer(modifier = Modifier.height(8.dp))
-            OutlinedTextField(
-                value = telefone,
-                modifier = Modifier.fillMaxWidth(),
-                onValueChange = {
-                    onTelefoneChange(it)
-                },
-                label = {
-                    Text(text = "Telefone de contato")
-                },
-                keyboardOptions = KeyboardOptions(
-                    keyboardType = KeyboardType.Phone
-                )
-            )
-            Spacer(modifier = Modifier.height(8.dp))
-            Row(
-                verticalAlignment = Alignment.CenterVertically,
-                modifier = Modifier.fillMaxWidth()
-            ){
-                Checkbox(
-                    checked = amigo,
-                    onCheckedChange = {
-                        onAmigoChange(it)
-                    }
-                )
-                Text(text = "Amigo")
-            }
-            Spacer(modifier = Modifier.height(16.dp))
-            Button(
-                onClick = { /*TODO*/ },
-                modifier = Modifier.fillMaxWidth()
-            ){
-                Text(
-                    text = "Cadastrar",
-                    modifier = Modifier.padding(8.dp)
-                )
-            }
-
         }
+
     }
 }
 
+
 @Composable
-fun ContatoList(){
+fun ContatoList() {
     Column(
         modifier = Modifier
             .fillMaxSize()
             .padding(16.dp)
             .verticalScroll(rememberScrollState()) // Barra de rolagem vertical
     ) {
-        for(i in 0..10){
+        for (i in 0..10) {
             ContatoCard()
             Spacer(modifier = Modifier.height(4.dp))
         }
@@ -182,9 +213,11 @@ fun ContatoCard() {
         Row(
             verticalAlignment = Alignment.CenterVertically
         ) {
-            Column(modifier = Modifier
-                .padding(8.dp)
-                .weight(2f)) {
+            Column(
+                modifier = Modifier
+                    .padding(8.dp)
+                    .weight(2f)
+            ) {
                 Text(
                     text = "Nome do Contato",
                     fontSize = 24.sp,
