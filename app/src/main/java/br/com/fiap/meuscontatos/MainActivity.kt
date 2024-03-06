@@ -62,6 +62,12 @@ class MainActivity : ComponentActivity() {
     }
 }
 
+/*
+A função ContatosScreen é responsável por desenhar e exibir a tela de cadastro de contatos.
+Responsável por dividir a tela em componentes menores, e no qual estão as variáveis de estado,
+que são responsáveis por armazenar os dados do formulário.
+
+ */
 @Composable
 fun ContatosScreen() {
     // Variáveis de estado
@@ -77,7 +83,13 @@ fun ContatosScreen() {
 
     // Tela
     Column {
+        /*
+        Chama a função ContatoForm, que contém a lógica e a interface do formulário de cadastro de contatos.
+        Responsável pela chamada do repositório dos dados no banco de dados.
+        O formulário recebe como parâmetros as variáveis de estado que armazenam os dados digitados pelo usuário.
+         */
         ContatoForm(
+
             nome = nomeSate.value,
             telefone = telefoneState.value,
             amigo = amigoState.value,
@@ -118,8 +130,10 @@ fun ContatoForm(
     onAmigoChange: (Boolean) -> Unit
 ) {
     // Obter a instância do repositorio
-    val context = LocalContext.current // Obter o contexto da aplicação (necessário para instanciar o repositório)
-    val contatoRepository = ContatoRepository(context) // Instanciar o repositório
+    //-- Obter o contexto do componente em execução na aplicação (necessário para instanciar o repositório)
+    val context = LocalContext.current
+    //-- Instanciar o repositório. Objeto que faz a chamada para o banco de dados
+    val contatoRepository = ContatoRepository(context) // O construtor da classe ContatoRepository recebe um contexto como parâmetro.
 
     // Formulário
     Column(
@@ -140,7 +154,7 @@ fun ContatoForm(
             /*
             onValueChange:
             É uma função de callback que é chamada quando o valor do campo de texto é alterado.
-            Ela recebe o novo valor como argumento: a função onTelefoneChange é chamada
+            Ela recebe o novo valor como argumento: a função onNomeChange é chamada
             com o novo valor.
              */
             onValueChange = {
@@ -182,12 +196,26 @@ fun ContatoForm(
         Spacer(modifier = Modifier.height(16.dp))
         Button(
             onClick = {
-                    // Criar um objeto do tipo Contato com os dados preenchidos no formulário
+                    /*
+                    Ao clicar no botão, cria-se um objeto do tipo Contato,
+                    e os dados do formulário serão submetidos ao banco de dados.
+                    A variável contato armazena todos os dados do formulário para serem salvos
+                    na tabela de contatos do banco de dados.
+                     */
+
+                    //-- Criar (instanciar) um objeto do tipo Contato com os dados preenchidos no formulário
                       val contato = Contato(
+                          /*
+                          Explicitar os valores dos atributos do objeto Contato, tomando o como exemplo o atributo nome:
+                          Há uma variável de estado que está guardando o nome: nomeState. Quando se cria o ContatoForm,
+                           passa-se o valor dessa variável de estado para o atributo nome do objeto Contato.
+                           */
                           nome = nome,
                           telefone = telefone,
                           amigo = amigo
                       )
+                    //-- Salvar o contato no banco de dados
+                    contatoRepository.salvar(contato) // O método salvar do repositório é chamado, passando o contato como argumento.
                        },
             modifier = Modifier.fillMaxWidth()
         ) {
