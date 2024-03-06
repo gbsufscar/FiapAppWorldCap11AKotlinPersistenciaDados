@@ -19,7 +19,6 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Checkbox
-import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -81,6 +80,15 @@ fun ContatosScreen() {
         mutableStateOf(false)
     }
 
+    // Variáveis de estado que serão utilizados para exibir as informações nos cards
+    val context = LocalContext.current
+    val contatoRepository = ContatoRepository(context)
+
+    // Variável de estado para armazenar a lista de contatos que será exibida nos cards
+    var listaContatosState = remember {
+        mutableStateOf(contatoRepository.listarContatos()) // Chama o método listar contatos.
+    }
+
     // Tela
     Column {
         /*
@@ -103,7 +111,11 @@ fun ContatosScreen() {
                 amigoState.value = it
             }
         )
-        ContatoList()
+        /*
+        Chama a função ContatoList, que contém a lógica e a interface dos cards de contatos.
+        Passa como parâmetro a lista de contatos que será exibida nos cards.
+         */
+        ContatoList(listaContatosState.value)
     }
 }
 
@@ -230,22 +242,23 @@ fun ContatoForm(
 
 
 @Composable
-fun ContatoList() {
+fun ContatoList(contatos: List<Contato>){ // Recebe a lista de contatos como parâmetro (listaContatosState)
     Column(
         modifier = Modifier
             .fillMaxSize()
             .padding(16.dp)
             .verticalScroll(rememberScrollState()) // Barra de rolagem vertical
     ) {
-        for (i in 0..10) {
-            ContatoCard()
+        // Passar a listaContatosState para a função ContatoList()
+        for (contato in contatos) {
+            ContatoCard(contato)
             Spacer(modifier = Modifier.height(4.dp))
         }
     }
 }
 
 @Composable
-fun ContatoCard() {
+fun ContatoCard(contato: Contato) {
     Card(
         modifier = Modifier.fillMaxWidth(),
         colors = CardDefaults.cardColors(
