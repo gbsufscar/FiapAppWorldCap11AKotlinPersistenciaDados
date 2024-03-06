@@ -9,8 +9,6 @@ import br.com.fiap.meuscontatos.model.Contato
 /*
 A classe abstrata ContatoDb herda a classe abstrata RoomDatabase (por isso aquela deve ser abstrata,
 pois classe abstrata só herda de classe abstrata.
-
-
  */
 @Database(entities = [Contato::class], version = 1)
 abstract class ContatoDb : RoomDatabase() {
@@ -22,27 +20,26 @@ abstract class ContatoDb : RoomDatabase() {
     abstract fun contatoDao(): ContatoDao
 
     /*
-    Bloco companion object para identificar se tratar de uma classe estática Singleton.
+    Bloco companion object para indicar que tudo o que está dentro dele é uma classe estática;
+    trata-se de uma classe estática Singleton (garante sempre o retorno de uma única instância).
     Retorna uma única instância do banco de dados (classe ContatoDb).
      */
     companion object {
 
         private lateinit var instance: ContatoDb // Atributo privado e estático do tipo ContatoDb
 
-        /*
-
-         */
-        fun getDatabase(context: Context): ContatoDb {
+        //Função getDatabase que retorna uma instância do banco de dados.
+        fun getDatabase(context: Context): ContatoDb { // Recebe um contexto da aplicação como parâmetro
             if (!::instance.isInitialized) { // Verifica se a instância do banco de dados já foi inicializada
                 instance = Room
-                    .databaseBuilder(
+                    .databaseBuilder( // Método construtor do banco de dados
                         context,
-                        ContatoDb::class.java,
-                        "contato_db"
+                        ContatoDb::class.java, // Indicar a classe que representa o banco de dados, já instanciada
+                        "contato_db" // Nome do banco de dados, criado na primeira instanciação do banco de dados
                     )
-                    .allowMainThreadQueries()
-                    .fallbackToDestructiveMigration()
-                    .build()
+                    .allowMainThreadQueries() // Permite que as consultas ao banco de dados sejam feitas na thread principal
+                    .fallbackToDestructiveMigration() // Permite que o banco de dados seja recriado em caso de mudança de versão
+                    .build() // Constrói o banco de dados (cria a instância)
             }
             return instance // Retorna a instância do banco de dados
         }
