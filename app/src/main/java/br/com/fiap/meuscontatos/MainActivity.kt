@@ -97,7 +97,6 @@ fun ContatosScreen() {
         O formulário recebe como parâmetros as variáveis de estado que armazenam os dados digitados pelo usuário.
          */
         ContatoForm(
-
             nome = nomeSate.value,
             telefone = telefoneState.value,
             amigo = amigoState.value,
@@ -109,6 +108,9 @@ fun ContatosScreen() {
             },
             onAmigoChange = {
                 amigoState.value = it
+            },
+            atualizar = {
+                listaContatosState.value = contatoRepository.listarContatos()
             }
         )
         /*
@@ -139,7 +141,8 @@ fun ContatoForm(
      */
     onNomeChange: (String) -> Unit,
     onTelefoneChange: (String) -> Unit,
-    onAmigoChange: (Boolean) -> Unit
+    onAmigoChange: (Boolean) -> Unit,
+    atualizar: () -> Unit // Função de callback para atualizar a lista de contatos
 ) {
     // Obter a instância do repositorio
     //-- Obter o contexto do componente em execução na aplicação (necessário para instanciar o repositório)
@@ -228,7 +231,8 @@ fun ContatoForm(
                       )
                     //-- Salvar o contato no banco de dados
                     contatoRepository.salvar(contato) // O método salvar do repositório é chamado, passando o contato como argumento.
-                       },
+                    atualizar() // Atualiza a lista de contatos
+                      },
             modifier = Modifier.fillMaxWidth()
         ) {
             Text(
@@ -258,7 +262,7 @@ fun ContatoList(contatos: List<Contato>){ // Recebe a lista de contatos como par
 }
 
 @Composable
-fun ContatoCard(contato: Contato) {
+fun ContatoCard( contato: Contato ) {
     Card(
         modifier = Modifier.fillMaxWidth(),
         colors = CardDefaults.cardColors(
@@ -274,17 +278,17 @@ fun ContatoCard(contato: Contato) {
                     .weight(2f)
             ) {
                 Text(
-                    text = "Nome do Contato",
+                    text = contato.nome, // Acessa o atributo nome do objeto contato e exibe no card tela
                     fontSize = 24.sp,
                     fontWeight = FontWeight.Bold
                 )
                 Text(
-                    text = "8888-9999",
+                    text = contato.telefone,
                     fontSize = 16.sp,
                     fontWeight = FontWeight.Bold
                 )
                 Text(
-                    text = "Amigo",
+                    text = if (contato.amigo) "Amigo" else "Não é amigo", // Operador ternário
                     fontSize = 16.sp,
                     fontWeight = FontWeight.Bold
                 )
